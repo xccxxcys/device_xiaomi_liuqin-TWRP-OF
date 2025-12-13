@@ -45,7 +45,7 @@ jobs:
       # 统一环境变量，避免重复引用
       BUILD_DATE: ${{ format('{0:YYYY-MM-DD}', github.event.head_commit.timestamp) }}
       REPO_NAME: ${{ github.event.repository.name }}
-      CCACHE_MAXSIZE: "20G"  # 加大缓存容量，适配大型项目
+      CCACHE_MAXSIZE: "5G"  # 加大缓存容量，适配大型项目
       TWRP_VERSION: "3.7.1-16"  # 集中管理版本号，便于修改
 
     steps:
@@ -65,12 +65,6 @@ jobs:
           remove-dotnet: true
           remove-android: true
           remove-haskell: true
-
-      - name: 🚀 Maximize build space (advanced)
-        uses: easimon/maximize-build-space@master
-        with:
-          root-reserve-mb: 5120
-          swap-size-mb: 10240  # 加大交换分区，避免内存不足
 
       - name: 📦 Setup persistent ccache
         uses: hendrikmuhs/ccache-action@v1.2
@@ -105,18 +99,12 @@ jobs:
           # 配置Git身份
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          # 验证依赖
-          repo --version || echo "Repo initialized"
-          java -version
-          gcc --version
-
+    
       - name: 📥 Sync source code (optimized)
         run: |
           set -e
           # 初始化repo（浅克隆+单分支，大幅提速）
-          repo init -u ${{ inputs.TWRP_MANIFEST_URL }} -b ${{ inputs.TWRP_MANIFEST_BRANCH }} \
-            --depth=1 --single-branch --no-tags
-          # 并行同步（显示进度，失败重试）
+          repo init -u ${{ inputs.TWRP_MANIFEST_URL }} -b ${{ inputs.TWRP_MANIFEST_BRANCH }} \ --depth=1
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
           echo "Source sync completed successfully"
 
@@ -125,13 +113,7 @@ jobs:
           set -e
           # 创建设备路径（避免路径不存在报错）
           mkdir -p $(dirname ${{ inputs.DEVICE_PATH }})
-          git clone ${{ inputs.DEVICE_TREE_URL }} -b ${{ inputs.DEVICE_TREE_BRANCH }} \
-            --depth=1 ${{ inputs.DEVICE_PATH }}
-          # 验证设备树
-          if [ ! -f "${{ inputs.DEVICE_PATH }}/Android.mk" ] && [ ! -f "${{ inputs.DEVICE_PATH }}/Android.bp" ]; then
-            echo "Error: Device tree missing Android.mk/Android.bp"
-            exit 1
-          fi
+          git clone ${{ inputs.DEVICE_TREE_URL }} -b ${{ inputs.DEVICE_TREE_BRANCH }} \ --depth=1 ${{ inputs.DEVICE_PATH }}
 
       - name: 📝 Generate build info
         run: |
@@ -200,13 +182,3 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🚨 Upload failed logs (on failure)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-failure-logs-${{ github.run_id }}
-          path: |
-            build.log
-            out/build-error.log
-          retention-days: 7  # 日志保留7天
