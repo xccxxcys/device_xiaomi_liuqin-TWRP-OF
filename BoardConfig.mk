@@ -93,7 +93,6 @@ $(foreach p, $(BOARD_PARTITION_LIST), $(eval BOARD_$(p)IMAGE_FILE_SYSTEM_TYPE :=
 $(foreach p, $(BOARD_PARTITION_LIST), $(eval TARGET_COPY_OUT_$(p) := $(call to-lower, $(p))))
 
 # System as root
-BOARD_BUILD_SYSTEM_ROOT_IMAGE := false
 BOARD_ROOT_EXTRA_FOLDERS := bluetooth dsp firmware persist metadata
 BOARD_SUPPRESS_SECURE_ERASE := true
 

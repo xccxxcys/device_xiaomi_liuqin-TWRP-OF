@@ -19,11 +19,11 @@ export OF_NO_MIUI_PATCH_WARNING=1  # 禁用MIUI补丁警告
  
 #设备相关配置（合并兼容设备列表，补充核心参数）
  
-#export TARGET_DEVICE_ALT=""  # 合并原有+新增兼容设备
+export TARGET_DEVICE_ALT="liuqin"  # 合并原有+新增兼容设备
 export FOX_VIRTUAL_AB_DEVICE=1  # 标记为虚拟A/B设备
 export OF_DYNAMIC_FULL_SIZE=9126805504  # 动态分区总大小（适配VAB设备）
 #export FOX_VARIANT="OPLUS_PINEAPPLE"  # 设备变体（一加菠萝系列专属）
-export OF_FORCE_PREBUILT_KERNEL=1  # 强制使用预编译内核
+#export OF_FORCE_PREBUILT_KERNEL=1  # 强制使用预编译内核
 export OF_UNBIND_SDCARD_F2FS=1  # 格式化F2FS时解绑SD卡
 export OF_WIPE_METADATA_AFTER_DATAFORMAT=1  # 格式化数据后清除metadata分区
 export OF_FORCE_DATA_FORMAT_F2FS=1  # 强制将数据分区格式化为F2FS
@@ -98,12 +98,14 @@ export OF_DEFAULT_KEYMASTER_VERSION=4.0  # 指定默认keymaster版本
  
 export FOX_BUGGED_AOSP_ARB_WORKAROUND="1546300800"  # 规避部分ROM防回滚检测（2019-01-01）
 export OF_QUICK_BACKUP_LIST="/boot;/data;"  # 快速备份默认分区（boot+data）
- 
+export FOX_ENABLE_KERNELSU_SUPPORT=1 #ksu支持
+export FOX_ENABLE_KERNELSU_NEXT_SUPPORT=1 #ksunext支持
+ export FOX_ENABLE_SUKISU_SUPPORT=1 #sukisu支持
 #特殊处理与工具配置
  
 export FOX_MAINTAINER_PATCH_VERSION=$(date +%y%m%d)  # 维护者补丁版本（按日期生成）
 export OF_MAINTAINER="Nanya"  # 维护者名称
-export FOX_MOVE_MAGISK_INSTALLER_TO_RAMDISK=1  # 将Magisk安装包移至内存盘
+export FOX_MOVE_MAGISK_INSTALLER_TO_RAMDISK=1  # 将Magisk安装包移至ramdisk
 #export OF_SKIP_FBE_DECRYPTION_SDKVERSION=32  # Android 12L及以上跳过FBE解密（避免卡LOGO）
  
 #启动画面修改（保持原有配置，注释冗余重复项）
