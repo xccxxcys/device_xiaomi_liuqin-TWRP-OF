@@ -1,4 +1,4 @@
-此为Fork版本，添加了WiFi功能
+此为Fork版本，添加了橙狐适配
 # TWRP 小米平板6 Pro（liuqin）
 基于[红米K60橙狐设备树](https://github.com/ymdzq/OFRP-device_xiaomi_mondrian)修改的TWRP设备树  
 参考了sk佬[小米12S twrp设备树](https://github.com/sekaiacg/TWRP_android_device_xiaomi_mayfly)
