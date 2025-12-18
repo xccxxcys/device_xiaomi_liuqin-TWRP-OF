@@ -168,7 +168,3 @@ TW_STATUS_ICONS_ALIGN := center
 
 # Serialno
 TW_USE_SERIALNO_PROPERTY_FOR_DEVICE_ID := true
-
-# 禁用 CTS 兼容性校验（Recovery 无需 CTS 支持）
-SKIP_CTS_TESTS := true
-BUILD_CTS := false
