@@ -160,15 +160,6 @@ jobs:
           git fetch https://github.com/ymdzq/OrangeFox_Recovery fox_12.1 && git cherry-pick 36289fac..05b3e1b9 || echo "⚠️ 12.1分支skkk补丁应用失败/无新补丁，继续构建"
           cd $WORKINGDIR
 
-      # - name: 🧩 Apply skkk 14.1 patches
-      #   if: ${{ inputs.USE_PATCHES == true && inputs.MANIFEST_BRANCH == '14.1' }}
-      #   run: |
-      #      WORKINGDIR=$(pwd)
-      #      cd $WORKINGDIR/bootable/recovery
-      #      git fetch https://github.com/ymdzq/OrangeFox_Recovery fox_12.1 && git cherry-pick 36289fac..05b3e1b9 || echo "⚠️ 14.1分支skkk补丁应用失败/无新补丁，继续构建"
-      #      cd $WORKINGDIR
-      # 不要启用，会冲突
-      
       - name: 🧩 Apply wifi 14.1 patches
         if: ${{ inputs.USE_PATCHES == true && inputs.MANIFEST_BRANCH == '14.1' }}
         run: |
@@ -250,9 +241,21 @@ jobs:
           source build/envsetup.sh
           export ALLOW_MISSING_DEPENDENCIES=true
           set -e
-          lunch twrp_${{ env.LUNCH_TARGET }}-eng
+          # 核心修改：根据 MANIFEST_BRANCH 动态选择 lunch 格式
+          if [ "${{ inputs.MANIFEST_BRANCH }}" = "14.1" ]; then
+            # 14.1分支：符合 <product>-<release>-<variant> 规范（ap2a为Android 14 release代号）
+            lunch twrp_${{ env.LUNCH_TARGET }}-ap2a-eng
+          elif [ "${{ inputs.MANIFEST_BRANCH }}" = "12.1" ]; then
+            # 12.1分支：保持原有格式
+            lunch twrp_${{ env.LUNCH_TARGET }}-eng
+          else
+            echo "❌ Unsupported MANIFEST_BRANCH: ${{ inputs.MANIFEST_BRANCH }}"
+            exit 1
+          fi
+          # 后台输出构建进度和内存使用情况
           (while true; do echo `date +%T` "Building OFRP..."; free -h; sleep 10; done) &
           TIP_PID=$!
+          # 构建命令（保留原逻辑，使用nproc-2避免资源耗尽）
           make -j$((`nproc` - 2)) adbd ${{ inputs.BUILD_PARTITION }}image
           kill $TIP_PID && exit 0
 
