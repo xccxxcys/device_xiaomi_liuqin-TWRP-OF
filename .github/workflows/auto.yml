@@ -253,7 +253,7 @@ jobs:
             exit 1
           fi
           make clean
-          make adbd ${{ inputs.BUILD_TARGET }}image -j$(nproc --all)
+          mka adbd ${{ inputs.BUILD_TARGET }} -j$(nproc --all)
 
       - name: 📤 Upload to Release
         uses: softprops/action-gh-release@v2
