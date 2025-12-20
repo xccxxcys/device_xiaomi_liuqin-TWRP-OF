@@ -53,12 +53,12 @@ on:
           - MagiskAlpha
           - MagiskDelta
       RECOVERY_INSTALLER:
-        description: '💾Include recovery magisk installer.zip'
+        description: '💾 Include recovery magisk installer.zip'
         type: boolean
         required: true
         default: true    
       RECOVERY_TAR:
-        description: '💾Release Recovery.tar For Samsung devices'
+        description: '💾 Release Recovery.tar For Samsung devices'
         type: boolean
         required: false
         default: false    
@@ -84,24 +84,24 @@ jobs:
     steps:
       - name: ℹ️ Show build info
         run: |
-          if [ -n "${{ github.event.inputs.LUNCH_TARGET }}" ]; then
-            echo "LUNCH_TARGET=${{ github.event.inputs.LUNCH_TARGET }}" >> "$GITHUB_ENV"
+          if [ -n "${{ inputs.LUNCH_TARGET }}" ]; then
+            echo "LUNCH_TARGET=${{ inputs.LUNCH_TARGET }}" >> "$GITHUB_ENV"
           else
-            echo "LUNCH_TARGET=${{ github.event.inputs.DEVICE_NAME }}" >> "$GITHUB_ENV"
+            echo "LUNCH_TARGET=${{ inputs.DEVICE_NAME }}" >> "$GITHUB_ENV"
           fi
           {
             echo 'BUILD_INFO<<EOF'
             echo
-            echo "📱 Device tree url: ${{ github.event.inputs.DEVICE_TREE }}"
-            echo "🌿 Device tree branch: ${{ github.event.inputs.DEVICE_TREE_BRANCH }}"
-            echo "📂 Device path: ${{ github.event.inputs.DEVICE_PATH }}"
-            echo "🖥️ Device name: ${{ github.event.inputs.DEVICE_NAME }}"
-            echo "📶 Target API Level: ${{ github.event.inputs.TARGET_API_LEVEL }}"
+            echo "📱 Device tree url: ${{ inputs.DEVICE_TREE }}"
+            echo "🌿 Device tree branch: ${{ inputs.DEVICE_TREE_BRANCH }}"
+            echo "📂 Device path: ${{ inputs.DEVICE_PATH }}"
+            echo "🖥️ Device name: ${{ inputs.DEVICE_NAME }}"
+            echo "📶 Target API Level: ${{ inputs.TARGET_API_LEVEL }}"
             echo "🛠️ Lunch target: ${{ env.LUNCH_TARGET }}"
-            echo "🎯 Build target: ${{ github.event.inputs.BUILD_PARTITION }}.img"
+            echo "🎯 Build target: ${{ inputs.BUILD_PARTITION }}.img"
             echo "📅 Build date: $(date)"
-            echo "🧩 Apply wifi patches: ${{ github.event.inputs.USE_PATCHES }}"
-            echo "🧩 Apply ymdzq patches: ${{ github.event.inputs.USE_YMDZQ_PATCHES }}"
+            echo "🧩 Apply wifi patches: ${{ inputs.USE_PATCHES }}"
+            echo "🧩 Apply ymdzq patches: ${{ inputs.USE_YMDZQ_PATCHES }}"
             echo
             echo EOF
           } >> "$GITHUB_ENV"
@@ -263,24 +263,24 @@ jobs:
             exit 1
           fi
           make clean
-          mka adbd ${{ inputs.BUILD_TARGET }} -j$(nproc --all)
-      
-    - name: 💾Include Recovery Installer
-      if: ${{ RECOVERY_INSTALLER == true }}
-      run: |
+          mka adbd ${{ inputs.BUILD_PARTITION }} -j$(nproc --all)
+
+      - name: 💾 Include Recovery Installer
+        if: ${{ inputs.RECOVERY_INSTALLER == true }}
+        run: |
           WORKINGDIR=$(pwd)
-          cd $WORKINGDIR/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/
+          cd $WORKINGDIR/out/target/product/${{ inputs.DEVICE_NAME }}/
           wget https://github.com/kinguser981/recovery-installer/releases/download/zip/recovery-installer.zip
-          zip -ur recovery-installer.zip ${{ env.RECOVERY_TYPE }}.img
-      continue-on-error: true
+          zip -ur recovery-installer.zip ${{ inputs.BUILD_PARTITION }}.img
+        continue-on-error: true
         
-    - name: 💾Recovery to tar for Samsung devices
-      if: ${{ RECOVERY_TAR == true }}
-      run: |
+      - name: 💾 Recovery to tar for Samsung devices
+        if: ${{ inputs.RECOVERY_TAR == true }}
+        run: |
           WORKINGDIR=$(pwd)
-          cd $WORKINGDIR/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/
-          tar -cvf ${{ env.RECOVERY_TYPE }}.tar ${{ env.RECOVERY_TYPE }}.img
-      continue-on-error: true
+          cd $WORKINGDIR/out/target/product/${{ inputs.DEVICE_NAME }}/
+          tar -cvf ${{ inputs.BUILD_PARTITION }}.tar ${{ inputs.BUILD_PARTITION }}.img
+        continue-on-error: true
         
       - name: 📤 Upload to Release
         uses: softprops/action-gh-release@v2
