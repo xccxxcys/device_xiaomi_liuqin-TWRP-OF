@@ -143,7 +143,7 @@ jobs:
             TWRP_REPO="https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git"
             TWRP_BRANCH="twrp-14"
             repo init -u $TWRP_REPO -b $TWRP_BRANCH --depth=1
-            repo sync --force-sync 
+            repo sync 
             git clone https://gitlab.com/OrangeFox/sync.git -b master
             chmod +x sync/orangefox_sync.sh
             cd sync
