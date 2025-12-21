@@ -248,6 +248,12 @@ jobs:
           export CCACHE_MAXSIZE=5G
           export USE_CCACHE=1
           export ALLOW_MISSING_DEPENDENCIES=true
+          export BOARD_VINTF_DISABLE_REQUIRE=true
+          export SKIP_VINTF_CHECK=true
+          export DISABLE_VINTF=true
+          export BOARD_VINTF_MERGE=false
+          # 欺骗 extract_kernel.py，创建空内核的符号链接
+          ln -sf $(DEVICE_PATH)/prebuilt/$(PRODUCT_RELEASE_NAME)/kernel $(OUT_DIR)/kernel
           ccache -s
           source build/envsetup.sh
           set -e
