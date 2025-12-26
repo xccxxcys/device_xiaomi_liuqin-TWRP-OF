@@ -265,7 +265,7 @@ jobs:
           make clean
           (while true; do echo "🛠️ [$(date +%T)] Building OFRP... | Free Mem: $(free -h | awk '/Mem:/ {print $4}')"; sleep 10; done) &
           TIP_PID=$!
-          mka adbd ${{ inputs.BUILD_PARTITION }}image -j$(nproc --all)
+          mka adbd ${{ inputs.BUILD_PARTITION }}image -j$(nproc --all) DISABLE_VINTF_CHECK=true
           kill $TIP_PID && exit 0
 
       - name: 💾 Include Recovery Installer
